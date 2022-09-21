@@ -62,6 +62,7 @@ public class MemberService implements UserDetailsService { // 스프링 시큐�
     }
 
     // 스프링 시큐리티를 사용하면 정보를 받는 곳
+    // 특정 유저명으로부터 비밀번호 혹은 권한을 알아야 할 때 사용한다.
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByUsername(username).get();
