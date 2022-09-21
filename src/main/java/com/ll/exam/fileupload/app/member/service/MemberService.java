@@ -4,6 +4,12 @@ import com.ll.exam.fileupload.app.member.entity.Member;
 import com.ll.exam.fileupload.app.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,11 +17,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class MemberService {
+public class MemberService implements UserDetailsService { // 스프링 시큐리티를 사용한 로그인 사용 시 UserDetailsService를 implement 해주어야 한다.
     @Value("${custom.genFileDirPath}") // 설정파일에서 원하는 값을 가져와 사용할 수 있는 어노테이션
     private String genFileDirPath;
 
@@ -51,5 +59,16 @@ public class MemberService {
 
     public Member getMemberById(Long loginedMemberId) {
         return memberRepository.findById(loginedMemberId).orElse(null);
+    }
+
+    // 스프링 시큐리티를 사용하면 정보를 받는 곳
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Member member = memberRepository.findByUsername(username).get();
+
+        List<GrantedAuthority> authorities = new ArrayList<>(); // 권한들
+        authorities.add(new SimpleGrantedAuthority("member")); // member권한 넣기
+
+        return new User(member.getUsername(), member.getPassword(), authorities); // 해당 유저에 권한까지 추가
     }
 }
