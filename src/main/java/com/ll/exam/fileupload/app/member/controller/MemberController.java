@@ -4,6 +4,7 @@ import com.ll.exam.fileupload.app.member.entity.Member;
 import com.ll.exam.fileupload.app.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,13 +41,16 @@ public class MemberController {
     }
 
     @GetMapping("/profile")
-    public String showProfile(HttpSession session) {
-        Long loginedMemberId = (Long)session.getAttribute("loginedMemberId");
+    public String showProfile(HttpSession session, Model model) {
+        Long loginedMemberId = (Long)session.getAttribute("loginedMemberId"); // 세션의 memberId를 넣어준다. 없으면 null
         boolean isLogined = loginedMemberId != null;
 
         if(isLogined == false) {
             return "redirect:/?errorMsg=Need To Login."; // 메인페이지로 이동하면서 추가로 에러메시지를 보내준다.
         }
+
+        Member loginedMember = memberService.getMemberById(loginedMemberId);
+        model.addAttribute("loginedMember", loginedMember);
 
         return "member/profile";
     }
