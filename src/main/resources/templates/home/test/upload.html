@@ -1,0 +1,14 @@
+<h1>파일 업로드 테스트</h1>
+
+<!--파일 업로드 시 꼭 method는 post로 진행된다. enctype은 압축방식을 의미함-->
+<!--th를 붙인 이유? -> csrf token을 생성하기 위함-->
+<form th:action="@{/upload}" method="post" enctype="multipart/form-data">
+    <div>
+        <span>파일 1</span>
+        <input type="file" name="img1" accept="image/png, image/gif, image/jpeg">
+    </div>
+    <div>
+        <span>업로드</span>
+        <input type="submit" value="전송">
+    </div>
+</form>
