@@ -1,15 +1,18 @@
 package com.ll.exam.fileupload;
 
 import com.ll.exam.fileupload.app.home.controller.HomeController;
+import com.ll.exam.fileupload.app.member.service.MemberService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -18,10 +21,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional // 실행된 것은 실제 DB에 반영되지 않음
+@ActiveProfiles({"base-addi", "test"})
 class AppTest {
 
 	@Autowired
 	private MockMvc mvc;
+
+	@Autowired
+	private MemberService memberService;
 
 	@Test
 	@DisplayName("메인화면에서는 안녕이 나온다.")
@@ -36,4 +43,10 @@ class AppTest {
 				.andExpect(content().string(containsString("안녕")));
 	}
 
+	@Test
+	@DisplayName("회원의 수")
+	void t2() {
+		long count = memberService.count();
+		assertThat(count).isGreaterThan(0);
+	}
 }

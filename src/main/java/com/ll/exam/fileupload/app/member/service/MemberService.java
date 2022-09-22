@@ -57,6 +57,17 @@ public class MemberService implements UserDetailsService { // 스프링 시큐�
         return member;
     }
 
+    public Member join(String username, String password, String email) {
+        Member member = Member.builder()
+                .username(username)
+                .email(email)
+                .password(password)
+                .build();
+
+        memberRepository.save(member);
+        return member;
+    }
+
     public Member getMemberById(Long loginedMemberId) {
         return memberRepository.findById(loginedMemberId).orElse(null);
     }
@@ -71,5 +82,9 @@ public class MemberService implements UserDetailsService { // 스프링 시큐�
         authorities.add(new SimpleGrantedAuthority("member")); // member권한 넣기
 
         return new User(member.getUsername(), member.getPassword(), authorities); // 해당 유저에 권한까지 추가
+    }
+
+    public long count() {
+        return memberRepository.count();
     }
 }
