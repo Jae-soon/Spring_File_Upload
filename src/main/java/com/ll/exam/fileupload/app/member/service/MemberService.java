@@ -35,16 +35,20 @@ public class MemberService implements UserDetailsService { // 스프링 시큐�
 
     public Member join(String username, String password, String email, MultipartFile profileImg) {
         // 상대경로 -> 여러 종류의 사진을 하나의 폴더에 넣지 않기 위해
-        String profileImgRelPath = "member/" + UUID.randomUUID().toString() + ".png";
-        File profileImgFile = new File(genFileDirPath + "/" + profileImgRelPath); // D:/temp/genFileDir/member/UUID.png
+        String profileImgDirName = "member";
+        String fileName = UUID.randomUUID().toString() + ".png";
+        String profileDirPath = genFileDirPath + "/" + profileImgDirName;
+        String profileImgFilePath = profileDirPath + "/" + fileName;
 
-        profileImgFile.mkdirs(); // 관련 폴더가 존재하지 않으면 폴더 생성
+        new File(profileImgFilePath).mkdirs(); // D:/temp/genFileDir/member/UUID.png
 
         try {
-            profileImg.transferTo(profileImgFile); // 파일을 미리 지정한 위치에 저장(File 객체)
+            profileImg.transferTo(new File(profileImgFilePath)); // 파일을 미리 지정한 위치에 저장(File 객체)
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        String profileImgRelPath = profileImgDirName + "/" + fileName;
 
         Member member = Member.builder()
                 .username(username)
@@ -86,5 +90,12 @@ public class MemberService implements UserDetailsService { // 스프링 시큐�
 
     public long count() {
         return memberRepository.count();
+    }
+
+    public void removeProfileImg(Member member) {
+        member.removeProfileImgOnStorage();
+        member.setProfileImg(null);
+
+        memberRepository.save(member);
     }
 }
