@@ -19,7 +19,11 @@ public class SecurityConfig {
                 .csrf().disable() // csrf 해제
                 .authorizeRequests()
                 .antMatchers("/**")
-                .permitAll(); // 로그인을 하지 않아도 모든페이지 허용
+                .permitAll() // 로그인을 하지 않아도 모든페이지 허용
+                .and()
+                .formLogin()
+                .loginPage("/member/login")
+                .loginProcessingUrl("/member/login");
         return http.build();
     }
 
